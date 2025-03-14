@@ -1,0 +1,243 @@
+---
+title: "LCA H1B Disclosure Data (2024-2025)"
+author: "Quang Le"
+output: html_document
+---
+
+```{=html}
+<style>
+.centered {
+  text-align: center;
+  font-family: "Times New Roman", Times, serif;
+  color: black; line-height: 2;
+}
+body {
+
+  font-size: 12pt;
+  font-family: "Times New Roman", Times, serif;
+  margin: 0 auto;
+  padding: 20px;
+}
+.content {
+  text-align: left; 
+  font-family: "Times New Roman", Times, serif;
+  font-size: 11pt;
+  color: black; line-height: 2;
+}
+</style>
+```
+
+:::: centered
+<h1>**LCA H1B Insights 2024-25: The Data, The Trends, and The Workforce**</h1>
+
+<h2>
+
+***Team members: Quang Minh Le,? ,and?***
+
+<h2>
+
+<p>`r format(Sys.time(), '%d %B, %Y')`</p>
+
+<img src="C:\Users\lequa\Pictures\Screenshots\Screenshot 2025-03-14 011149.png" alt="H1B Visa" style="width:100%;height: 100%"/>
+
+<u>H1B PROGRAM - UNITED STATES OF AMERICA</u>
+
+
+::: content
+<u>Note:</u> This page is only for my DATA 2401 project.
+
+# **<u>I.Introduction</u>**
+
+> "Immigration is not just a link to America's past; it's also a bridge to America's future. " – George W. Bush
+
+<u>Note:</u> The President spoke about the [Immigration Act of 1990](https://www.congress.gov/bill/101st-congress/senate-bill/358) in the Roosevelt Room at the White House. The Act was approved November 29, and was assigned Public Law No. 101 - 649. After that, it made big changes to U.S. immigration laws by allowing more people to immigrate and creating a better-organized system for work-related immigration.
+
+## **<u>1. About the H1B Program</u>**
+
+[The H1B program](https://www.dol.gov/agencies/whd/immigration/h1b) is a U.S. work visa designed for skilled foreign professionals. It allows companies to hire international workers in specialized fields like IT, engineering, medicine, and finance. Employers must prove that hiring these workers will not negatively impact the U.S. job market.
+
+## **<u>2. What is the LCA? </u>**
+
+The [Labor Condition Application (LCA)](https://flag.dol.gov/programs/LCA) is a document that employers must file with the [Department of Labor (DOL)](https://flag.dol.gov/) as part of the H1B visa process ***(LCA is a requisite of H1B petition)***. The LCA confirms that the employer will pay the foreign worker fairly and that the hiring won't harm U.S. workers' wages or working conditions. ***Remember:*** When employee obtained LCA (certified status) from DOL, it does not mean that the employee has done the H1B visa's process.
+
+## **<u>3. The Process of H1B Visa</u>**
+
+The H1B process includes several steps:
+
+1.  The employer files an LCA with the DOL.
+
+2.  After the LCA is approved, the employer registers the worker in the H1B lottery system during the USCIS registration period.
+
+3.  USCIS randomly selects registrants for processing. Only those selected can proceed to the next step.
+
+4.  The employer submits the H1B petition to USCIS and the petition review by USCIS.
+
+5.  The worker applies for the H1B visa at a U.S. embassy or consulate in their home country. If granted, they can begin employment.
+
+<u>You can read more information about  **[H1B process (USCIS)](https://www.uscis.gov/working-in-the-united-states/temporary-workers/h-1b-specialty-occupations/h-1b-electronic-registration-process)**.</u>
+
+## **4.<u>Something is very interested?</u>**
+
+**H1B Cap-Exempt vs. Regular Employer:**
+
+**1.H1B Cap-Exempt Employer:**
+
+- These employers are not subject to the annual H1B visa limit [Cap Season](https://www.uscis.gov/working-in-the-united-states/temporary-workers/h-1b-specialty-occupations/h-1b-cap-season)
+
+- Typically includes universities, nonprofit research institutions, and government research organizations.
+
+- Applications can be filed any time of the year without going through the H1B lottery.
+
+**2.H1B Regular Employer:**
+
+- These employers fall under the annual H1B visa cap.
+
+- Includes private companies and for-profit organizations.
+
+- Workers must be selected through the lottery process to proceed with their visa petition if applications exceed the cap.
+
+**For example:**
+
+**H1B Regular Employer in Houston:** Deloitte, Ernst & Young, PWC, KPMG, etc.
+
+**H1B Cap-Exempt Employer in Houston:** MD Anderson, University of Houston System, Houston Independent School District, etc.
+
+# **<u>II. About the LCA Dataset</u>**
+
+## **<u>1. Where is the original data?</u>**
+
+The original LCA dataset is publicly available from the U.S. Department of Labor.It is prepared and managed by the Office of Foreign Labor Certification (OFLC) under the Department's Employment and Training Administration. This dataset provides detailed information about H1B applications, including job titles, wages, worksite locations, etc. 
+
+***Link to view/download the dataset: [LCA Dataset](https://www.dol.gov/agencies/eta/foreign-labor/performance)***
+
+## **<u>2. Why my team chose this dataset?</u>**
+
+The dataset we selected focuses on data from 2024 to Q1 of 2025, making it ideal for uncovering key trends in H1B applications during this time period. Our aim is to conduct a detailed analysis to understand:
+
+**1.Application Outcomes:** Examining the trends in certified, denied, and withdrawn applications, and identifying any patterns.
+
+**2. State-Level Insights:** Analyzing how H1B applications are distributed across all U.S. states to determine geographic hotspots for employment-based immigration.
+
+**3.Top Sponsoring Companies:** Highlighting the companies that filed the most applications, providing insights into industries or organizations most reliant on H1B workers.
+
+**4.Quarterly Trends:** Breaking down the data by quarter to observe how application numbers and outcomes fluctuate over time. This approach allows us to spot seasonal trends or shifts in demand.
+
+**5.Wage and Occupation Analysis:** Investigating the offered prevailing wages and job categories (e.g., technology, healthcare) to understand how they align with industry standards and labor market demands. 
+
+## **<u>3. What are the variables in the filtered data and its meaning?</u>**
+
+- Case Information:
+
+**CASE_NUMBER**: A unique identifier for each Labor Condition Application (LCA).
+
+**CASE_STATUS**: The application status (e.g., Certified, Denied, Withdrawn).
+
+- Date Information:
+
+**RECEIVED_DATE**: The date the LCA application was submitted.
+
+**DECISION_DATE**: The date a decision was made on the application.
+
+- Job and Visa Details:
+
+**VISA_CLASS**: The type of visa, such as H1B.
+
+**JOB_TITLE**: The official job title for the position being filled.
+
+**SOC_CODE**: The [Standard Occupational Classification (SOC)](https://www.onetonline.org/find/all) code for the job.
+
+**SOC_TITLE**: The title corresponding to the SOC code, describing the job category.
+
+**FULL_TIME_POSITION**: Indicates if the position is full-time (Yes/No).
+
+**BEGIN_DATE**: The date the employment starts.
+
+**END_DATE**: The date the employment ends.
+
+**TOTAL_WORKER_POSITIONS**: The total number of workers requested for the role.
+
+- Employer Information:
+
+**EMPLOYER_NAME**: Name of the company or organization submitting the LCA.
+
+**EMPLOYER_ADDRESS1**: Address of the employer.
+
+**EMPLOYER_CITY**: City where the employer is located.
+
+**EMPLOYER_STATE**: State where the employer is located.
+
+**EMPLOYER_POSTAL_CODE**: Postal code of the employer's location.
+
+**NAICS_CODE**: [North American Industry Classification System (NAICS) code](https://www.census.gov/naics/) representing the industry the employer operates in.
+
+- Legal Representation:
+
+**AGENT_REPRESENTING_EMPLOYER**: Indicates if an agent represents the employer (Yes/No).
+
+**LAWFIRM_NAME_BUSINESS_NAME**: Name of the law firm or representative assisting with the application.
+
+- Worksite Information:
+
+**WORKSITE_WORKERS**: Number of workers at the job location.
+
+**WORKSITE_CITY**: City where the job is located.
+
+**WORKSITE_STATE**: State where the job is located.
+
+**WORKSITE_POSTAL_CODE**: Postal code for the job location.
+
+- Wage Details:
+
+**WAGE_RATE_OF_PAY_FROM**: The starting wage offered for the position.
+
+**WAGE_RATE_OF_PAY_TO**: The maximum wage offered for the position (if applicable).
+
+**WAGE_UNIT_OF_PAY**: The frequency of pay (e.g., hourly, yearly).
+
+**PREVAILING_WAGE**: The standard wage for similar roles in the area.
+
+**PW_UNIT_OF_PAY**: The unit of pay for the prevailing wage (e.g., hourly, yearly).
+
+**PW_WAGE_LEVEL**: The skill level associated with the [prevailing wage from DOL](https://flag.dol.gov/wage-data/wage-search) (e.g., Level 1–4).
+
+**PW_OES_YEAR**: The year the prevailing wage data was sourced from the [Occupational Employment Statistics (OES)](https://flag.dol.gov/wage-data/wage-search).
+
+# **III. GET READY TO LAUNCH THE DATA!**
+
+```{r}
+library(dplyr) # used to install tigris package
+library(knitr) #for dynamic report generation
+library(kableExtra) # used to construct Complex Table for data
+library(tidyverse)# multiple tidy up data packages here
+library(ggplot2) # used for data visualization
+library(plotly)
+
+
+
+```
+
+```{r}
+file_path <- "C:\\Users\\lequa\\Downloads\\LCA H1B FY2024-2025\\"
+csv_files <- list.files(path = file_path, pattern = "\\.csv$", full.names = TRUE)
+LCA_2024_2025_data <- csv_files %>%
+  lapply(read.csv) %>%
+  bind_rows %>% 
+filter(!if_all(everything(), is.na)) %>% 
+select(CASE_NUMBER, CASE_STATUS, RECEIVED_DATE, DECISION_DATE, VISA_CLASS, 
+         JOB_TITLE, SOC_CODE, SOC_TITLE, FULL_TIME_POSITION, BEGIN_DATE, END_DATE, 
+         TOTAL_WORKER_POSITIONS, EMPLOYER_NAME, EMPLOYER_ADDRESS1, EMPLOYER_CITY,   EMPLOYER_STATE, EMPLOYER_POSTAL_CODE, 
+         NAICS_CODE, AGENT_REPRESENTING_EMPLOYER, LAWFIRM_NAME_BUSINESS_NAME, 
+         WORKSITE_WORKERS, WORKSITE_CITY, WORKSITE_STATE, 
+         WORKSITE_POSTAL_CODE, WAGE_RATE_OF_PAY_FROM, WAGE_RATE_OF_PAY_TO, 
+         WAGE_UNIT_OF_PAY, PREVAILING_WAGE, PW_UNIT_OF_PAY, PW_WAGE_LEVEL, 
+         PW_OES_YEAR)
+head(LCA_2024_2025_data)
+glimpse(LCA_2024_2025_data)
+```
+
+# **<u>III. Questions for data analysis</u>**
+
+
+:::
+
+
