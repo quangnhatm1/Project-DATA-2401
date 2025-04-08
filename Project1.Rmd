@@ -4,6 +4,7 @@ author: "Quang Le"
 output: html_document
 ---
 
+
 ```{=html}
 <style>
 .centered {
@@ -203,13 +204,16 @@ The dataset we selected focuses on data from 2024 to Q1 of 2025, making it ideal
 
 # III. GET READY TO LAUNCH THE DATA!
 
-```{r}
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
 library(dplyr) # used to install tigris package
 library(knitr) #for dynamic report generation
 library(kableExtra) # used to construct Complex Table for data
 library(tidyverse)# multiple tidy up data packages here
 library(ggplot2) # used for data visualization
 library(plotly)
+library(DT)
 
 
 
@@ -222,25 +226,100 @@ LCA_2024_2025_data <- csv_files %>%
   lapply(read.csv) %>%
   
   bind_rows %>% 
-  filter(!if_all(everything(), is.na)) %>% 
   select(CASE_NUMBER, CASE_STATUS, RECEIVED_DATE, DECISION_DATE, VISA_CLASS, 
          JOB_TITLE, SOC_CODE, SOC_TITLE, FULL_TIME_POSITION, BEGIN_DATE, END_DATE,
-         TOTAL_WORKER_POSITIONS, EMPLOYER_NAME, EMPLOYER_CITY,   EMPLOYER_STATE, EMPLOYER_POSTAL_CODE, 
+         TOTAL_WORKER_POSITIONS, EMPLOYER_NAME, EMPLOYER_CITY,EMPLOYER_STATE, EMPLOYER_POSTAL_CODE, EMPLOYER_COUNTRY,
          NAICS_CODE, AGENT_REPRESENTING_EMPLOYER, LAWFIRM_NAME_BUSINESS_NAME, 
          WORKSITE_WORKERS, WORKSITE_CITY, WORKSITE_STATE, 
          WORKSITE_POSTAL_CODE, WAGE_RATE_OF_PAY_FROM, WAGE_RATE_OF_PAY_TO, 
          WAGE_UNIT_OF_PAY, PREVAILING_WAGE, PW_UNIT_OF_PAY, PW_WAGE_LEVEL, 
-         PW_OES_YEAR)
-head(LCA_2024_2025_data)
+         PW_OES_YEAR) %>% 
+  filter(!if_all(everything(), ~is.na(.) | . == ""))
 glimpse(LCA_2024_2025_data)
 ```
 
 # <u>IV. Questions for data analysis</u>
 
-## <u>1. How many case status were certified, Certified Withdrawn, Denied, and Withdrawn (Quarter by quarter)?</u>
+## <u>1.1. How many case status were certified, Certified Withdrawn, Denied, and Withdrawn (by State)?</u>
 
+```{r}
+count_cases <-  LCA_2024_2025_data %>% group_by(EMPLOYER_STATE) %>% 
+  select(CASE_NUMBER, CASE_STATUS, EMPLOYER_STATE) %>% 
+  summarize(
+  Certified_Cases = sum(CASE_STATUS=="Certified"),
+  Certified_Withdrawn_Cases = sum(CASE_STATUS=="Certified - Withdrawn"),
+  Withdraw_Cases= sum(CASE_STATUS=="Withdrawn"),
+  Denied_Cases = sum(CASE_STATUS=="Denied"),
+  Total_Cases = n()
+) %>%  rename(
+    "Employer States" = EMPLOYER_STATE,
+    "Certified Cases" = Certified_Cases,
+    "Certified Withdrawn Cases" = Certified_Withdrawn_Cases,
+    "Withdraw Cases" = Withdraw_Cases,
+    "Denied Cases" = Denied_Cases,
+    "Total Case" = Total_Cases )
+
+datatable(count_cases, 
+          options = list(pageLength = 10, 
+                         scrollX = TRUE), 
+          rownames = FALSE)
+
+```
+
+## <u>1.2. How many case status were certified, Certified Withdrawn, Denied, and Withdrawn with Emmpty States (by Country and Visa class)?</u>
+
+```{r}
+missing_state_cases <- LCA_2024_2025_data %>% 
+  filter(is.na(EMPLOYER_STATE) | EMPLOYER_STATE == "") %>%     select(CASE_NUMBER,CASE_STATUS,VISA_CLASS,EMPLOYER_CITY,EMPLOYER_COUNTRY) %>% 
+  rename(
+    "Case Number"=CASE_NUMBER,
+    "Case Status"=CASE_STATUS,
+    "Visa Class"=VISA_CLASS,
+    "Country Name"= EMPLOYER_COUNTRY,
+    "City Name" = EMPLOYER_CITY )
+datatable(missing_state_cases,
+          options = list(pageLength = 10,
+                         scrollX = TRUE), 
+          rownames = FALSE)
+```
+
+## 1.3. Demonstrate the trend of case status through quarter by quarter.
+
+```{r}
+
+case_trends <- LCA_2024_2025_data %>% mutate(DECISION_DATE = as.Date(DECISION_DATE, format = "%m/%d/%Y")) %>% 
+  mutate(Quarter = case_when(
+    DECISION_DATE >= as.Date("2024-10-01") & DECISION_DATE <= as.Date("2024-12-31") ~ "Q1-2025",
+    DECISION_DATE >= as.Date("2024-07-01") & DECISION_DATE <= as.Date("2024-09-30") ~ "Q4-2024",
+    DECISION_DATE >= as.Date("2024-04-01") & DECISION_DATE <= as.Date("2024-06-30") ~ "Q3-2024",
+    DECISION_DATE >= as.Date("2024-01-01") & DECISION_DATE <= as.Date("2024-03-31") ~ "Q2-2024",
+    DECISION_DATE >= as.Date("2023-10-02") & DECISION_DATE <= as.Date("2023-12-31") ~ "Q1-2024",
+    TRUE ~ NA_character_
+  )) %>% 
+  group_by(Quarter, CASE_STATUS) %>%
+  summarize(Total_Cases = n(), .groups = "drop")
+
+datatable(case_trends,
+          options = list(pageLength = 10, 
+                         scrollX = TRUE), 
+          rownames = FALSE)
+
+p <- ggplot(case_trends, aes(x = Quarter, y = Total_Cases, fill = CASE_STATUS,
+   text = paste("Cases:", Total_Cases, "<br>Status:", CASE_STATUS))) + 
+  geom_bar(stat = "identity") +
+  labs(title = "Case Status Trend by Quarter",
+       x = "Quarter",
+       y = "Total Cases") +
+  theme_minimal() +
+  scale_fill_manual(values = c("Certified" = "green", "Certified - Withdrawn" = "pink", "Withdrawn" = "orange", "Denied" = "red"))
+interactive_plot_1 <- ggplotly(p, tooltip = "text")
+interactive_plot_1
+
+```
+## 2. 
 
 :::
+
 
 ::::
 
