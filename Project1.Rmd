@@ -39,7 +39,7 @@ body {
 
 <p>`r format(Sys.time(), '%d %B, %Y')`</p>
 
-<img src="C:\Users\lequa\Pictures\Screenshots\Screenshot 2025-03-14 011149.png" alt="H1B Visa" style="width:100%;height: 100%"/>
+<img src="C:\Users\lequa\Downloads\AdobeStock_307262896-scaled.jpeg" style="width:100%;height: 100%"/>
 
 <u>H1B PROGRAM - UNITED STATES OF AMERICA</u>
 
@@ -166,6 +166,8 @@ The dataset we selected focuses on data from 2024 to Q1 of 2025, making it ideal
 
 **EMPLOYER_STATE**: State where the employer is located.
 
+**EMPLOYER_COUNTRY**: country where the employer is located
+
 **EMPLOYER_POSTAL_CODE**: Postal code of the employer's location.
 
 **NAICS_CODE**: [North American Industry Classification System (NAICS) code](https://www.census.gov/naics/) representing the industry the employer operates in.
@@ -214,8 +216,10 @@ library(tidyverse)# multiple tidy up data packages here
 library(ggplot2) # used for data visualization
 library(plotly)
 library(DT)
-
-
+library(leaflet)
+library(tidygeocoder)
+library(ggmap)
+library(mapview)
 
 ```
 
@@ -237,6 +241,8 @@ LCA_2024_2025_data <- csv_files %>%
   filter(!if_all(everything(), ~is.na(.) | . == ""))
 glimpse(LCA_2024_2025_data)
 ```
+
+
 
 # <u>IV. Questions for data analysis</u>
 
@@ -317,6 +323,58 @@ interactive_plot_1
 
 ```
 ## 2. 
+ Which cities sponsor the most visa (top 50), what is the most popular jobs in these cities?
+```{r}
+most_sponsor_cities <- LCA_2024_2025_data %>% 
+  group_by(WORKSITE_CITY,WORKSITE_STATE) %>% 
+  summarize(
+  Total_Sponsorships = n(),
+  Certified_Cases = sum(CASE_STATUS == "Certified", na.rm = TRUE),
+  Approval_Rating = round((Certified_Cases / Total_Sponsorships),2)*100) %>% 
+  arrange(-Total_Sponsorships,-Approval_Rating) %>% 
+  head(50)
+datatable(most_sponsor_cities, 
+          options = list(pageLength = 10, 
+                         scrollX = TRUE), 
+          rownames = FALSE)
+
+top_city_jobs <- LCA_2024_2025_data %>%
+  filter(WORKSITE_CITY %in% most_sponsor_cities$WORKSITE_CITY, CASE_STATUS == "Certified") %>%
+  group_by(WORKSITE_CITY, WORKSITE_STATE, SOC_TITLE) %>%  
+  summarize(
+    Total_Certified_Jobs = n(),  
+    .groups = "drop"
+  ) %>%
+  arrange(-Total_Certified_Jobs) 
+datatable(top_city_jobs, 
+          options = list(pageLength = 10, 
+                         scrollX = TRUE), 
+          rownames = FALSE)
+
+top_jobs_per_city <- top_city_jobs %>%
+  group_by(WORKSITE_CITY) %>%
+  slice_max(order_by = Total_Certified_Jobs, n = 5)  
+
+datatable(top_jobs_per_city, 
+          options = list(pageLength = 10, 
+                         scrollX = TRUE), 
+          rownames = FALSE)
+
+
+```
+
+*** Visualize the data to show which cities and states have the highest visa sponsorships!***
+```{r}
+us_map <- map_data("state")
+
+
+
+
+
+
+
+```
+
 
 :::
 
